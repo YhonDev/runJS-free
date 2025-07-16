@@ -10,10 +10,14 @@ let errorDetails = null; // To store structured error information
 const context = vm.createContext({
     console: {
         log: (...args) => {
-            capturedOutput += args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ') + String.fromCharCode(10);
+            args.forEach(arg => {
+                capturedOutput += (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg) + String.fromCharCode(10);
+            });
         },
         error: (...args) => {
-            capturedOutput += 'Error: ' + args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ') + String.fromCharCode(10);
+            args.forEach(arg => {
+                capturedOutput += 'Error: ' + (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg) + String.fromCharCode(10);
+            });
         }
     },
     // Custom function to capture expression results
