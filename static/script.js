@@ -178,9 +178,37 @@ require(['vs/editor/editor.main'], function () {
         }
     });
 
-    function createTab() {
-        tabCount++;
-        const tabId = `tab-${tabCount}`;
+    function saveState() {
+        const tabs = Object.keys(editors).map(tabId => ({
+            id: tabId,
+            content: editors[tabId].getValue(),
+        }));
+        localStorage.setItem('runjs_tabs', JSON.stringify(tabs));
+        localStorage.setItem('runjs_active_tab', activeTabId);
+    }
+
+    function loadState() {
+        const savedTabs = JSON.parse(localStorage.getItem('runjs_tabs'));
+        const savedActiveTab = localStorage.getItem('runjs_active_tab');
+
+        if (savedTabs && savedTabs.length > 0) {
+            savedTabs.forEach(tabData => {
+                createTab(tabData.content, tabData.id);
+            });
+            // Restore active tab, or activate the first one
+            const tabToActivate = savedActiveTab && editors[savedActiveTab] ? savedActiveTab : savedTabs[0].id;
+            activateTab(tabToActivate);
+        } else {
+            // If no state, create a default tab
+            createTab();
+        }
+    }
+
+    function createTab(content = '', id = null) {
+        const tabId = id || `tab-${++tabCount}`;
+        if (!id) {
+            tabCount = Math.max(tabCount, parseInt(tabId.split('-')[1]));
+        }
 
         // Create tab button
         const tabButton = document.createElement('div');
@@ -188,20 +216,22 @@ require(['vs/editor/editor.main'], function () {
         tabButton.id = `btn-${tabId}`;
         
         const tabName = document.createElement('span');
-        tabName.textContent = `Untitled-${tabCount}.js`;
+        tabName.textContent = `Untitled-${tabId.split('-')[1]}.js`;
         tabName.addEventListener('click', () => activateTab(tabId));
         tabButton.appendChild(tabName);
 
         // Only add a close button if it's not the first tab
-        if (tabCount > 1) {
-            const closeBtn = document.createElement('button');
-            closeBtn.classList.add('close-tab-btn');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent activateTab from firing
-                closeTab(tabId);
-            });
-            tabButton.appendChild(closeBtn);
+        if (Object.keys(editors).length > 0 || !id) { // Logic to ensure first tab from load can be closed if more are added
+             if (tabId !== 'tab-1') { // Explicitly prevent closing tab-1
+                const closeBtn = document.createElement('button');
+                closeBtn.classList.add('close-tab-btn');
+                closeBtn.innerHTML = '&times;';
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent activateTab from firing
+                    closeTab(tabId);
+                });
+                tabButton.appendChild(closeBtn);
+            }
         }
         
         tabBar.appendChild(tabButton);
@@ -253,7 +283,7 @@ require(['vs/editor/editor.main'], function () {
 
         // Initialize Monaco Editor
         const editor = monaco.editor.create(editorContainer, {
-            value: '', // Set initial value to empty string
+            value: content, // Set initial value from parameter
             language: 'javascript',
             theme: themeSelect.value // Set initial theme
         });
@@ -269,6 +299,7 @@ require(['vs/editor/editor.main'], function () {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 socket.emit('code_change', { code: editor.getValue(), tab_id: tabId });
+                saveState(); // Save state on code change
             }, 300); // 300ms debounce
         });
 
@@ -302,7 +333,9 @@ require(['vs/editor/editor.main'], function () {
             document.removeEventListener('mouseup', handleMouseUp);
         }
 
-        activateTab(tabId);
+        if (!id) {
+            activateTab(tabId);
+        }
     }
 
     function closeTab(tabId) {
@@ -330,6 +363,7 @@ require(['vs/editor/editor.main'], function () {
                 activeTabId = null;
             }
         }
+        saveState(); // Save state after closing a tab
     }
 
     function activateTab(tabId) {
@@ -359,6 +393,7 @@ require(['vs/editor/editor.main'], function () {
 
         // Emit code on tab activation to get fresh output
         socket.emit('code_change', { code: editors[tabId].getValue(), tab_id: tabId });
+        saveState(); // Save active tab on activation
     }
 
     // Theme switching logic
@@ -381,8 +416,8 @@ require(['vs/editor/editor.main'], function () {
     themeSelect.value = savedTheme;
     applyTheme(savedTheme);
 
-    addTabBtn.addEventListener('click', createTab);
+    addTabBtn.addEventListener('click', () => createTab());
 
-    // Create initial tab on load
-    createTab();
+    // Load tabs from localStorage on initial load
+    loadState();
 });
