@@ -27,7 +27,7 @@ body.theme-monokai {
     --button-hover-bg: #75715e;
 }
 
-body.theme-dracula {
+html.theme-dracula {
     --bg-primary: #282a36;
     --bg-secondary: #21222c;
     --border-primary: #44475a;
@@ -39,7 +39,7 @@ body.theme-dracula {
     --button-hover-bg: #6272a4;
 }
 
-body.theme-dark-git {
+html.theme-dark-git {
     --bg-primary: #1e1e1e;
     --bg-secondary: #252526;
     --border-primary: #333333;

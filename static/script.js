@@ -398,7 +398,7 @@ require(['vs/editor/editor.main'], function () {
 
     // Theme switching logic
     function applyTheme(theme) {
-        document.body.className = `theme-${theme}`;
+        document.documentElement.className = `theme-${theme}`;
         // Apply theme to all existing editors
         Object.values(editors).forEach(editor => {
             monaco.editor.setTheme(theme);
