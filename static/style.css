@@ -1,0 +1,221 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #282c34; /* Dark background for overall app */
+    color: #abb2bf;
+}
+
+header {
+    background-color: #21252b;
+    color: #61afef;
+    padding: 10px;
+    text-align: center;
+    font-size: 1.5em;
+    border-bottom: 1px solid #3e4451;
+}
+
+.theme-selector {
+    font-size: 0.6em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.theme-selector label {
+    color: #61afef;
+}
+
+.theme-selector select {
+    background-color: #282c34;
+    color: #abb2bf;
+    border: 1px solid #3e4451;
+    padding: 3px;
+    border-radius: 3px;
+}
+
+.tab-section {
+    display: flex;
+    align-items: center;
+    background-color: #21252b;
+    padding: 5px 10px;
+    border-bottom: 1px solid #3e4451;
+}
+
+#tab-bar {
+    display: flex;
+    flex-grow: 1;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab {
+    padding: 8px 15px;
+    cursor: pointer;
+    background-color: #282c34;
+    border: 1px solid #3e4451;
+    border-bottom: none;
+    margin-right: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #abb2bf;
+    white-space: nowrap;
+    display: flex; /* To align text and close button */
+    align-items: center;
+}
+
+.tab.active {
+    background-color: #3e4451;
+    color: #e06c75;
+    border-color: #61afef;
+}
+
+.close-tab-btn {
+    margin-left: 10px;
+    font-size: 0.8em;
+    cursor: pointer;
+    color: #abb2bf;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.close-tab-btn:hover {
+    background-color: #555;
+    color: white;
+}
+
+#add-tab-btn {
+    background-color: #61afef;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-left: 10px;
+}
+
+#add-tab-btn:hover {
+    background-color: #569cd6;
+}
+
+#tab-content-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tab-content {
+    display: none;
+    flex-grow: 1;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+.code-area {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.editor-container {
+    flex: 1;
+    border: 1px solid #3e4451;
+    margin: 5px;
+    overflow: hidden;
+}
+
+.output-container {
+    flex: 1;
+    background-color: #21252b;
+    border: 1px solid #3e4451;
+    margin: 5px;
+    padding: 10px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.9em;
+    color: #abb2bf;
+}
+
+.output-container pre {
+    margin: 0;
+}
+
+/* Resizer for horizontal split */
+.resizer {
+    width: 5px;
+    cursor: ew-resize;
+    background-color: #3e4451;
+}
+
+/* Resizer for vertical split */
+.resizer.vertical {
+    height: 5px;
+    cursor: ns-resize;
+    background-color: var(--border-color);
+}
+
+/* Theme: Monokai */
+body.theme-monokai {
+    --bg-color: #272822;
+    --header-bg-color: #272822;
+    --header-text-color: #f92672;
+    --border-color: #49483e;
+    --tab-bg-color: #272822;
+    --tab-text-color: #f8f8f2;
+    --tab-active-bg-color: #49483e;
+    --tab-active-text-color: #a6e22e;
+    --tab-active-border-color: #f92672;
+    --button-bg-color: #a6e22e;
+    --button-hover-bg-color: #66d9ef;
+    --output-bg-color: #272822;
+    --output-text-color: #f8f8f2;
+}
+
+/* Theme: Dracula */
+body.theme-dracula {
+    --bg-color: #282a36;
+    --header-bg-color: #21222c;
+    --header-text-color: #bd93f9;
+    --border-color: #44475a;
+    --tab-bg-color: #282a36;
+    --tab-text-color: #f8f8f2;
+    --tab-active-bg-color: #44475a;
+    --tab-active-text-color: #50fa7b;
+    --tab-active-border-color: #bd93f9;
+    --button-bg-color: #50fa7b;
+    --button-hover-bg-color: #8be9fd;
+    --output-bg-color: #21222c;
+    --output-text-color: #f8f8f2;
+}
+
+/* Theme: Dark Git */
+body.theme-dark-git {
+    --bg-color: #1e1e1e;
+    --header-bg-color: #252526;
+    --header-text-color: #569cd6;
+    --border-color: #333333;
+    --tab-bg-color: #1e1e1e;
+    --tab-text-color: #cccccc;
+    --tab-active-bg-color: #333333;
+    --tab-active-text-color: #9cdcfe;
+    --tab-active-border-color: #569cd6;
+    --button-bg-color: #569cd6;
+    --button-hover-bg-color: #4a8cd2;
+    --output-bg-color: #252526;
+    --output-text-color: #cccccc;
+}
+
+.output-container.error {
+    color: #e06c75; /* Red color for errors */
+    border-color: #e06c75; /* Red border for errors */
+}
