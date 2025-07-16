@@ -257,6 +257,16 @@ require(['vs/editor/editor.main'], function () {
         editorHeader.innerHTML = `<i class="fas fa-code"></i><span>Editor de JavaScript</span>`;
         editorPanel.appendChild(editorHeader);
 
+        const clearEditorBtn = document.createElement('button');
+        clearEditorBtn.classList.add('clear-editor-btn');
+        clearEditorBtn.innerHTML = '<i class="fas fa-broom"></i>';
+        clearEditorBtn.title = 'Limpiar Editor';
+        editorHeader.appendChild(clearEditorBtn);
+
+        clearEditorBtn.addEventListener('click', () => {
+            editor.setValue('');
+        });
+
         const editorContainer = document.createElement('div');
         editorContainer.classList.add('editor-container');
         editorPanel.appendChild(editorContainer);

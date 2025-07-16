@@ -230,6 +230,27 @@ main {
     font-size: 0.875rem; /* 14px */
     font-weight: 500;
     color: var(--text-secondary);
+    justify-content: space-between; /* Distribute items */
+}
+
+.panel-header span {
+    flex-grow: 1; /* Allow span to take available space */
+}
+
+.clear-editor-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1em;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.clear-editor-btn:hover {
+    background-color: var(--button-hover-bg);
+    color: var(--text-primary);
 }
 
 .editor-container, .output-container {
