@@ -5,7 +5,7 @@ require.config({
 });
 
 let editors = {};
-let tabCount = 0;
+let nextTabNumber = 1; // Start from 1 for the initial tab, then 2 for subsequent
 let activeTabId = null;
 let socket;
 
@@ -187,23 +187,40 @@ require(['vs/editor/editor.main'], function () {
         localStorage.setItem('runjs_active_tab', activeTabId);
     }
 
+    function getNextAvailableTabNumber() {
+        // Find the smallest available number >= 1
+        let num = 1;
+        while (editors[`tab-${num}`]) { // Check if tab-num already exists
+            num++;
+        }
+        return num;
+    }
+
     function loadState() {
         const savedTabs = JSON.parse(localStorage.getItem('runjs_tabs'));
         const savedActiveTab = localStorage.getItem('runjs_active_tab');
 
-        let maxTabIdNum = 0; // Track the highest tab number found
+        // Reset editors and nextTabNumber before loading
+        editors = {};
+        nextTabNumber = 1; // Reset for fresh load
 
         if (savedTabs && savedTabs.length > 0) {
+            // Sort tabs by their number to ensure tab-1 is created first
+            savedTabs.sort((a, b) => parseInt(a.id.split('-')[1]) - parseInt(b.id.split('-')[1]));
+
             savedTabs.forEach(tabData => {
-                // Ensure tabId is always 'tab-X' format for consistency
-                const currentTabId = tabData.id;
-                const tabNum = parseInt(currentTabId.split('-')[1]);
-                if (!isNaN(tabNum)) {
-                    maxTabIdNum = Math.max(maxTabIdNum, tabNum);
-                }
-                createTab(tabData.content, currentTabId); // Pass the original ID
+                createTab(tabData.content, tabData.id); // Create tab with its saved ID
             });
-            tabCount = maxTabIdNum; // Set tabCount to the highest ID found
+
+            // After all tabs are loaded, ensure nextTabNumber is correct
+            let maxTabIdNum = 0;
+            Object.keys(editors).forEach(id => {
+                const num = parseInt(id.split('-')[1]);
+                if (!isNaN(num)) {
+                    maxTabIdNum = Math.max(maxTabIdNum, num);
+                }
+            });
+            nextTabNumber = maxTabIdNum + 1;
 
             const tabToActivate = savedActiveTab && editors[savedActiveTab] ? savedActiveTab : savedTabs[0].id;
             activateTab(tabToActivate);
@@ -213,11 +230,19 @@ require(['vs/editor/editor.main'], function () {
     }
 
     function createTab(content = '', id = null) {
-        // If no ID is provided (new tab), increment tabCount for a unique ID
-        // If an ID is provided (loading from state), use that ID and ensure tabCount is updated
-        const currentTabNum = id ? parseInt(id.split('-')[1]) : ++tabCount;
-        const tabId = `tab-${currentTabNum}`;
-        tabCount = Math.max(tabCount, currentTabNum); // Ensure tabCount is always the highest
+        let tabId;
+        let tabNum;
+
+        if (id) { // Loading from saved state
+            tabId = id;
+            tabNum = parseInt(id.split('-')[1]);
+        } else { // Creating a new tab
+            tabNum = getNextAvailableTabNumber();
+            tabId = `tab-${tabNum}`;
+        }
+
+        // Update nextTabNumber if a higher number is used
+        nextTabNumber = Math.max(nextTabNumber, tabNum + 1);
 
         // Create tab button
         const tabButton = document.createElement('div');
@@ -225,7 +250,7 @@ require(['vs/editor/editor.main'], function () {
         tabButton.id = `btn-${tabId}`;
         
         const tabName = document.createElement('span');
-        tabName.textContent = `Untitled-${currentTabNum}.js`; // Use currentTabNum for naming
+        tabName.textContent = `Untitled-${tabNum}.js`; // Use tabNum for naming
         tabName.addEventListener('click', () => activateTab(tabId));
         tabButton.appendChild(tabName);
 
@@ -367,6 +392,17 @@ require(['vs/editor/editor.main'], function () {
         const tabContent = document.getElementById(tabId);
         const tabIndex = Array.from(tabBar.children).indexOf(tabButton);
 
+        // Determine which tab to activate BEFORE removing the current one
+        let newActiveTabId = null;
+        const currentTabElements = Array.from(tabBar.children);
+        const currentTabIndex = currentTabElements.indexOf(tabButton);
+
+        if (currentTabIndex > 0) { // If not the first tab, activate the one before it
+            newActiveTabId = currentTabElements[currentTabIndex - 1].id.replace('btn-', '');
+        } else if (currentTabElements.length > 1) { // If it's the first tab, activate the next one
+            newActiveTabId = currentTabElements[currentTabIndex + 1].id.replace('btn-', '');
+        }
+
         // Remove tab and its content
         tabButton.remove();
         tabContent.remove();
@@ -375,17 +411,12 @@ require(['vs/editor/editor.main'], function () {
         editors[tabId].dispose();
         delete editors[tabId];
 
-        // If the closed tab was active, activate another tab
-        if (activeTabId === tabId) {
-            const remainingTabs = document.querySelectorAll('.tab');
-            if (remainingTabs.length > 0) {
-                // Activate the previous tab or the first tab if the closed one was the first
-                const newIndex = Math.max(0, tabIndex - 1);
-                const newTabId = remainingTabs[newIndex].id.replace('btn-', '');
-                activateTab(newTabId);
-            } else {
-                activeTabId = null;
-            }
+        // Activate the determined new tab
+        if (newActiveTabId) {
+            activateTab(newActiveTabId);
+        } else {
+            // This case should ideally not be reached if we prevent closing the last tab
+            activeTabId = null;
         }
         saveState(); // Save state after closing a tab
     }
