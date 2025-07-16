@@ -15,7 +15,7 @@
     --button-hover-bg: #475569; /* slate-600 */
 }
 
-body.theme-monokai {
+html.theme-monokai {
     --bg-primary: #272822;
     --bg-secondary: #272822;
     --border-primary: #49483e;
