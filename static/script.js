@@ -190,17 +190,20 @@ require(['vs/editor/editor.main'], function () {
         const tabName = document.createElement('span');
         tabName.textContent = `Untitled-${tabCount}.js`;
         tabName.addEventListener('click', () => activateTab(tabId));
-        
-        const closeBtn = document.createElement('button');
-        closeBtn.classList.add('close-tab-btn');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent activateTab from firing
-            closeTab(tabId);
-        });
-        
         tabButton.appendChild(tabName);
-        tabButton.appendChild(closeBtn);
+
+        // Only add a close button if it's not the first tab
+        if (tabCount > 1) {
+            const closeBtn = document.createElement('button');
+            closeBtn.classList.add('close-tab-btn');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent activateTab from firing
+                closeTab(tabId);
+            });
+            tabButton.appendChild(closeBtn);
+        }
+        
         tabBar.appendChild(tabButton);
 
         // Create tab content
@@ -305,6 +308,7 @@ require(['vs/editor/editor.main'], function () {
     function closeTab(tabId) {
         const tabButton = document.getElementById(`btn-${tabId}`);
         const tabContent = document.getElementById(tabId);
+        const tabIndex = Array.from(tabBar.children).indexOf(tabButton);
 
         // Remove tab and its content
         tabButton.remove();
@@ -318,13 +322,12 @@ require(['vs/editor/editor.main'], function () {
         if (activeTabId === tabId) {
             const remainingTabs = document.querySelectorAll('.tab');
             if (remainingTabs.length > 0) {
-                // Activate the last tab in the list
-                const lastTabId = remainingTabs[remainingTabs.length - 1].id.replace('btn-', '');
-                activateTab(lastTabId);
+                // Activate the previous tab or the first tab if the closed one was the first
+                const newIndex = Math.max(0, tabIndex - 1);
+                const newTabId = remainingTabs[newIndex].id.replace('btn-', '');
+                activateTab(newTabId);
             } else {
                 activeTabId = null;
-                // Optional: create a new tab if all are closed
-                createTab();
             }
         }
     }
