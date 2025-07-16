@@ -1,95 +1,131 @@
+/* Estilos generales */
 body {
-    font-family: sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
+    background-color: #0f172a; /* slate-900 */
+    color: #e2e8f0; /* slate-200 */
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
-    background-color: #282c34; /* Dark background for overall app */
-    color: #abb2bf;
 }
 
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #1e293b; /* slate-800 */
+}
+::-webkit-scrollbar-thumb {
+    background: #475569; /* slate-600 */
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b; /* slate-500 */
+}
+
+/* Encabezado */
 header {
-    background-color: #21252b;
-    color: #61afef;
-    padding: 10px;
-    text-align: center;
-    font-size: 1.5em;
-    border-bottom: 1px solid #3e4451;
-}
-
-.theme-selector {
-    font-size: 0.6em;
     display: flex;
     align-items: center;
-    gap: 5px;
+    justify-content: space-between;
+    padding: 0 1rem;
+    height: 3.5rem; /* 56px */
+    background-color: #1e293b; /* slate-800 */
+    border-bottom: 1px solid #334155; /* slate-700 */
+    flex-shrink: 0;
 }
 
-.theme-selector label {
-    color: #61afef;
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* 12px */
 }
 
-.theme-selector select {
-    background-color: #282c34;
-    color: #abb2bf;
-    border: 1px solid #3e4451;
-    padding: 3px;
-    border-radius: 3px;
+.logo i {
+    font-size: 1.5rem; /* 24px */
+    color: #facc15; /* yellow-400 */
 }
 
+.logo span {
+    font-weight: bold;
+    font-size: 1.125rem; /* 18px */
+}
+
+.controls button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 8px */
+    padding: 0.5rem 1rem; /* 8px 16px */
+    background-color: #334155; /* slate-700 */
+    border: none;
+    color: #e2e8f0; /* slate-200 */
+    border-radius: 0.5rem; /* 8px */
+    font-size: 0.875rem; /* 14px */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.controls button:hover {
+    background-color: #475569; /* slate-600 */
+}
+
+/* Sección de pestañas */
 .tab-section {
     display: flex;
     align-items: center;
-    background-color: #21252b;
+    background-color: #0f172a; /* slate-900 */
     padding: 5px 10px;
-    border-bottom: 1px solid #3e4451;
+    border-bottom: 1px solid #334155; /* slate-700 */
 }
 
 #tab-bar {
     display: flex;
     flex-grow: 1;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .tab {
     padding: 8px 15px;
     cursor: pointer;
-    background-color: #282c34;
-    border: 1px solid #3e4451;
+    background-color: #1e293b; /* slate-800 */
+    border: 1px solid #334155; /* slate-700 */
     border-bottom: none;
     margin-right: 5px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    color: #abb2bf;
+    color: #94a3b8; /* slate-400 */
     white-space: nowrap;
-    display: flex; /* To align text and close button */
-    align-items: center;
 }
 
 .tab.active {
-    background-color: #3e4451;
-    color: #e06c75;
-    border-color: #61afef;
+    background-color: #334155; /* slate-700 */
+    color: #e2e8f0; /* slate-200 */
+    font-weight: 500;
 }
 
 .close-tab-btn {
+    background: none;
+    border: none;
+    color: #94a3b8; /* slate-400 */
+    font-size: 1.2em;
     margin-left: 10px;
-    font-size: 0.8em;
     cursor: pointer;
-    color: #abb2bf;
-    padding: 2px 5px;
+    padding: 0 5px;
     border-radius: 3px;
 }
 
 .close-tab-btn:hover {
-    background-color: #555;
+    background-color: #475569; /* slate-600 */
     color: white;
 }
 
 #add-tab-btn {
-    background-color: #61afef;
-    color: white;
+    background-color: #334155; /* slate-700 */
+    color: #e2e8f0; /* slate-200 */
     border: none;
     padding: 5px 10px;
     border-radius: 3px;
@@ -97,21 +133,21 @@ header {
     font-size: 1.2em;
     margin-left: 10px;
 }
-
 #add-tab-btn:hover {
-    background-color: #569cd6;
+    background-color: #475569; /* slate-600 */
 }
 
-#tab-content-container {
-    flex-grow: 1;
+
+/* Contenido principal */
+main {
     display: flex;
-    flex-direction: column;
+    flex: 1;
     overflow: hidden;
 }
 
 .tab-content {
     display: none;
-    flex-grow: 1;
+    flex: 1;
     flex-direction: column;
     overflow: hidden;
 }
@@ -122,100 +158,88 @@ header {
 
 .code-area {
     display: flex;
-    flex-grow: 1;
+    flex: 1;
     overflow: hidden;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 50%;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* 12px */
+    padding: 0.5rem 1rem; /* 8px 16px */
+    background-color: rgba(15, 23, 42, 0.5); /* slate-900/50 */
+    border-bottom: 1px solid #334155; /* slate-700 */
+    font-size: 0.875rem; /* 14px */
+    font-weight: 500;
+    color: #94a3b8; /* slate-400 */
+}
+
+.editor-container, .output-container {
+    flex: 1;
+    background-color: #1e293b; /* slate-800 */
+    font-family: 'Fira Code', monospace;
+    font-size: 1rem; /* 16px */
+    overflow: auto;
 }
 
 .editor-container {
-    flex: 1;
-    border: 1px solid #3e4451;
-    margin: 5px;
-    overflow: hidden;
+    padding: 0; /* Monaco Editor maneja su propio padding */
 }
 
 .output-container {
-    flex: 1;
-    background-color: #21252b;
-    border: 1px solid #3e4451;
-    margin: 5px;
-    padding: 10px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    font-family: 'Fira Code', 'Cascadia Code', monospace;
-    font-size: 0.9em;
-    color: #abb2bf;
-}
-
-.output-container pre {
-    margin: 0;
-}
-
-/* Resizer for horizontal split */
-.resizer {
-    width: 5px;
-    cursor: ew-resize;
-    background-color: #3e4451;
-}
-
-/* Resizer for vertical split */
-.resizer.vertical {
-    height: 5px;
-    cursor: ns-resize;
-    background-color: var(--border-color);
-}
-
-/* Theme: Monokai */
-body.theme-monokai {
-    --bg-color: #272822;
-    --header-bg-color: #272822;
-    --header-text-color: #f92672;
-    --border-color: #49483e;
-    --tab-bg-color: #272822;
-    --tab-text-color: #f8f8f2;
-    --tab-active-bg-color: #49483e;
-    --tab-active-text-color: #a6e22e;
-    --tab-active-border-color: #f92672;
-    --button-bg-color: #a6e22e;
-    --button-hover-bg-color: #66d9ef;
-    --output-bg-color: #272822;
-    --output-text-color: #f8f8f2;
-}
-
-/* Theme: Dracula */
-body.theme-dracula {
-    --bg-color: #282a36;
-    --header-bg-color: #21222c;
-    --header-text-color: #bd93f9;
-    --border-color: #44475a;
-    --tab-bg-color: #282a36;
-    --tab-text-color: #f8f8f2;
-    --tab-active-bg-color: #44475a;
-    --tab-active-text-color: #50fa7b;
-    --tab-active-border-color: #bd93f9;
-    --button-bg-color: #50fa7b;
-    --button-hover-bg-color: #8be9fd;
-    --output-bg-color: #21222c;
-    --output-text-color: #f8f8f2;
-}
-
-/* Theme: Dark Git */
-body.theme-dark-git {
-    --bg-color: #1e1e1e;
-    --header-bg-color: #252526;
-    --header-text-color: #569cd6;
-    --border-color: #333333;
-    --tab-bg-color: #1e1e1e;
-    --tab-text-color: #cccccc;
-    --tab-active-bg-color: #333333;
-    --tab-active-text-color: #9cdcfe;
-    --tab-active-border-color: #569cd6;
-    --button-bg-color: #569cd6;
-    --button-hover-bg-color: #4a8cd2;
-    --output-bg-color: #252526;
-    --output-text-color: #cccccc;
+    padding: 1rem; /* 16px */
+    color: #cbd5e1; /* slate-300 */
 }
 
 .output-container.error {
-    color: #e06c75; /* Red color for errors */
-    border-color: #e06c75; /* Red border for errors */
+    color: #f87171; /* red-400 */
+}
+
+/* Divisor */
+.resizer {
+    width: 6px;
+    background-color: #334155; /* slate-700 */
+    cursor: col-resize;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.resizer:hover {
+    background-color: #10b981; /* green-500 */
+}
+
+/* Pie de página */
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    height: 2.5rem; /* 40px */
+    background-color: #1e293b; /* slate-800 */
+    border-top: 1px solid #334155; /* slate-700 */
+    font-size: 0.75rem; /* 12px */
+    color: #94a3b8; /* slate-400 */
+    flex-shrink: 0;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* 16px */
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 8px */
+}
+
+.status-item i {
+    color: #22c55e; /* green-500 */
 }

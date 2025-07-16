@@ -186,8 +186,21 @@ require(['vs/editor/editor.main'], function () {
         const tabButton = document.createElement('div');
         tabButton.classList.add('tab');
         tabButton.id = `btn-${tabId}`;
-        tabButton.textContent = `Untitled-${tabCount}.js`;
-        tabButton.addEventListener('click', () => activateTab(tabId));
+        
+        const tabName = document.createElement('span');
+        tabName.textContent = `Untitled-${tabCount}.js`;
+        tabName.addEventListener('click', () => activateTab(tabId));
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.classList.add('close-tab-btn');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent activateTab from firing
+            closeTab(tabId);
+        });
+        
+        tabButton.appendChild(tabName);
+        tabButton.appendChild(closeBtn);
         tabBar.appendChild(tabButton);
 
         // Create tab content
@@ -196,23 +209,44 @@ require(['vs/editor/editor.main'], function () {
         tabContent.id = tabId;
         tabContentContainer.appendChild(tabContent);
 
-        // Add editor and output containers inside tab content
+        // Main container for editor and output
         const codeArea = document.createElement('div');
         codeArea.classList.add('code-area');
         tabContent.appendChild(codeArea);
 
+        // Editor Panel
+        const editorPanel = document.createElement('div');
+        editorPanel.classList.add('panel');
+        codeArea.appendChild(editorPanel);
+
+        const editorHeader = document.createElement('div');
+        editorHeader.classList.add('panel-header');
+        editorHeader.innerHTML = `<i class="fas fa-code"></i><span>Editor de JavaScript</span>`;
+        editorPanel.appendChild(editorHeader);
+
         const editorContainer = document.createElement('div');
         editorContainer.classList.add('editor-container');
-        codeArea.appendChild(editorContainer);
+        editorPanel.appendChild(editorContainer);
 
-        // Add resizer
+        // Resizer
         const resizer = document.createElement('div');
         resizer.classList.add('resizer');
         codeArea.appendChild(resizer);
 
+        // Result Panel
+        const resultPanel = document.createElement('div');
+        resultPanel.classList.add('panel');
+        codeArea.appendChild(resultPanel);
+
+        const resultHeader = document.createElement('div');
+        resultHeader.classList.add('panel-header');
+        resultHeader.innerHTML = `<i class="fas fa-terminal"></i><span>Resultado</span>`;
+        resultPanel.appendChild(resultHeader);
+
         const outputContainer = document.createElement('div');
         outputContainer.classList.add('output-container');
-        codeArea.appendChild(outputContainer);
+        resultPanel.appendChild(outputContainer);
+
 
         // Initialize Monaco Editor
         const editor = monaco.editor.create(editorContainer, {
@@ -247,11 +281,16 @@ require(['vs/editor/editor.main'], function () {
             if (!isResizing) return;
             const containerWidth = codeArea.offsetWidth;
             const newEditorWidth = e.clientX - codeArea.getBoundingClientRect().left;
-            const editorPercentage = (newEditorWidth / containerWidth) * 100;
+            
+            // Set constraints for resizing
+            const minWidth = 100; // Minimum width for panels in pixels
+            const resizerWidth = resizer.offsetWidth;
 
-            editorContainer.style.flexBasis = `${editorPercentage}%`;
-            outputContainer.style.flexBasis = `${100 - editorPercentage}%`;
-            editor.layout(); // Important to relayout Monaco editor after resize
+            if (newEditorWidth > minWidth && containerWidth - newEditorWidth - resizerWidth > minWidth) {
+                editorPanel.style.flexBasis = `${newEditorWidth}px`;
+                resultPanel.style.flexBasis = `${containerWidth - newEditorWidth - resizerWidth}px`;
+                editor.layout(); // Important to relayout Monaco editor after resize
+            }
         }
 
         function handleMouseUp() {
@@ -261,6 +300,33 @@ require(['vs/editor/editor.main'], function () {
         }
 
         activateTab(tabId);
+    }
+
+    function closeTab(tabId) {
+        const tabButton = document.getElementById(`btn-${tabId}`);
+        const tabContent = document.getElementById(tabId);
+
+        // Remove tab and its content
+        tabButton.remove();
+        tabContent.remove();
+
+        // Clean up editor instance
+        editors[tabId].dispose();
+        delete editors[tabId];
+
+        // If the closed tab was active, activate another tab
+        if (activeTabId === tabId) {
+            const remainingTabs = document.querySelectorAll('.tab');
+            if (remainingTabs.length > 0) {
+                // Activate the last tab in the list
+                const lastTabId = remainingTabs[remainingTabs.length - 1].id.replace('btn-', '');
+                activateTab(lastTabId);
+            } else {
+                activeTabId = null;
+                // Optional: create a new tab if all are closed
+                createTab();
+            }
+        }
     }
 
     function activateTab(tabId) {
