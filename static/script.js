@@ -368,6 +368,8 @@ require(['vs/editor/editor.main'], function () {
         Object.values(editors).forEach(editor => {
             monaco.editor.setTheme(theme);
         });
+        // Save the selected theme to localStorage
+        localStorage.setItem('runjs_theme', theme);
     }
 
     themeSelect.addEventListener('change', (event) => {
@@ -375,7 +377,9 @@ require(['vs/editor/editor.main'], function () {
     });
 
     // Apply initial theme on load
-    applyTheme(themeSelect.value);
+    const savedTheme = localStorage.getItem('runjs_theme') || 'vs-dark';
+    themeSelect.value = savedTheme;
+    applyTheme(savedTheme);
 
     addTabBtn.addEventListener('click', createTab);
 
