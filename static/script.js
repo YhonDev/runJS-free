@@ -335,10 +335,18 @@ require(['vs/editor/editor.main'], function () {
     function activateTab(tabId) {
         // Deactivate current active tab
         if (activeTabId) {
-            document.getElementById(activeTabId).classList.remove('active');
-            document.getElementById(`btn-${activeTabId}`).classList.remove('active');
+            const oldTabContent = document.getElementById(activeTabId);
+            const oldTabButton = document.getElementById(`btn-${activeTabId}`);
+            if (oldTabContent) {
+                oldTabContent.classList.remove('active');
+            }
+            if (oldTabButton) {
+                oldTabButton.classList.remove('active');
+            }
             // Clear decorations from previously active editor
-            editors[activeTabId].currentDecorations = editors[activeTabId].deltaDecorations(editors[activeTabId].currentDecorations, []);
+            if (editors[activeTabId]) {
+                editors[activeTabId].currentDecorations = editors[activeTabId].deltaDecorations(editors[activeTabId].currentDecorations, []);
+            }
         }
 
         // Activate new tab
