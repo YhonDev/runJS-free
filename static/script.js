@@ -5,7 +5,7 @@ require.config({
 });
 
 let editors = {};
-let nextTabNumber = 1; // Start from 1 for the initial tab, then 2 for subsequent
+let nextTabNumber = 1; // This will be updated by loadState or getNextAvailableTabNumber
 let activeTabId = null;
 let socket;
 
