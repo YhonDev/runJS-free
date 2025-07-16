@@ -8,7 +8,6 @@
     --bg-secondary: #1e293b; /* slate-800 */
     --border-primary: #334155; /* slate-700 */
     --text-primary: #e2e8f0; /* slate-200 */
-    --output-color: #a7f3d0; /* light green, e.g., emerald-200 */
     --text-secondary: #94a3b8; /* slate-400 */
     --accent-primary: #facc15; /* yellow-400 */
     --accent-secondary: #10b981; /* green-500 */
@@ -26,6 +25,7 @@ html.theme-monokai {
     --accent-secondary: #a6e22e;
     --button-bg: #49483e;
     --button-hover-bg: #75715e;
+    --output-color: #a6e22e; /* Monokai green */
 }
 
 html.theme-dracula {
@@ -38,6 +38,7 @@ html.theme-dracula {
     --accent-secondary: #50fa7b;
     --button-bg: #44475a;
     --button-hover-bg: #6272a4;
+    --output-color: #50fa7b; /* Dracula green */
 }
 
 html.theme-dark-git {
@@ -50,6 +51,7 @@ html.theme-dark-git {
     --accent-secondary: #6a9955;
     --button-bg: #333333;
     --button-hover-bg: #454545;
+    --output-color: #b8d7a3; /* Dark Git light green */
 }
 
 body {
