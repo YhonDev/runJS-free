@@ -8,6 +8,7 @@
     --bg-secondary: #1e293b; /* slate-800 */
     --border-primary: #334155; /* slate-700 */
     --text-primary: #e2e8f0; /* slate-200 */
+    --output-color: #a7f3d0; /* light green, e.g., emerald-200 */
     --text-secondary: #94a3b8; /* slate-400 */
     --accent-primary: #facc15; /* yellow-400 */
     --accent-secondary: #10b981; /* green-500 */
@@ -267,7 +268,7 @@ main {
 
 .output-container {
     padding: 1rem; /* 16px */
-    color: var(--text-primary);
+    color: var(--output-color);
 }
 
 .output-container.error {
