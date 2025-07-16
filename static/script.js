@@ -351,17 +351,20 @@ require(['vs/editor/editor.main'], function () {
     }
 
     // Theme switching logic
-    themeSelect.addEventListener('change', (event) => {
-        const selectedTheme = event.target.value;
-        document.body.className = ''; // Clear existing theme classes
-        if (selectedTheme !== 'vs-dark') {
-            document.body.classList.add(`theme-${selectedTheme}`);
-        }
+    function applyTheme(theme) {
+        document.body.className = `theme-${theme}`;
         // Apply theme to all existing editors
         Object.values(editors).forEach(editor => {
-            monaco.editor.setTheme(selectedTheme);
+            monaco.editor.setTheme(theme);
         });
+    }
+
+    themeSelect.addEventListener('change', (event) => {
+        applyTheme(event.target.value);
     });
+
+    // Apply initial theme on load
+    applyTheme(themeSelect.value);
 
     addTabBtn.addEventListener('click', createTab);
 
