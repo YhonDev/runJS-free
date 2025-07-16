@@ -191,24 +191,33 @@ require(['vs/editor/editor.main'], function () {
         const savedTabs = JSON.parse(localStorage.getItem('runjs_tabs'));
         const savedActiveTab = localStorage.getItem('runjs_active_tab');
 
+        let maxTabIdNum = 0; // Track the highest tab number found
+
         if (savedTabs && savedTabs.length > 0) {
             savedTabs.forEach(tabData => {
-                createTab(tabData.content, tabData.id);
+                // Ensure tabId is always 'tab-X' format for consistency
+                const currentTabId = tabData.id;
+                const tabNum = parseInt(currentTabId.split('-')[1]);
+                if (!isNaN(tabNum)) {
+                    maxTabIdNum = Math.max(maxTabIdNum, tabNum);
+                }
+                createTab(tabData.content, currentTabId); // Pass the original ID
             });
-            // Restore active tab, or activate the first one
+            tabCount = maxTabIdNum; // Set tabCount to the highest ID found
+
             const tabToActivate = savedActiveTab && editors[savedActiveTab] ? savedActiveTab : savedTabs[0].id;
             activateTab(tabToActivate);
         } else {
-            // If no state, create a default tab
-            createTab();
+            createTab(); // Create default tab if no saved state
         }
     }
 
     function createTab(content = '', id = null) {
-        const tabId = id || `tab-${++tabCount}`;
-        if (!id) {
-            tabCount = Math.max(tabCount, parseInt(tabId.split('-')[1]));
-        }
+        // If no ID is provided (new tab), increment tabCount for a unique ID
+        // If an ID is provided (loading from state), use that ID and ensure tabCount is updated
+        const currentTabNum = id ? parseInt(id.split('-')[1]) : ++tabCount;
+        const tabId = `tab-${currentTabNum}`;
+        tabCount = Math.max(tabCount, currentTabNum); // Ensure tabCount is always the highest
 
         // Create tab button
         const tabButton = document.createElement('div');
@@ -216,22 +225,21 @@ require(['vs/editor/editor.main'], function () {
         tabButton.id = `btn-${tabId}`;
         
         const tabName = document.createElement('span');
-        tabName.textContent = `Untitled-${tabId.split('-')[1]}.js`;
+        tabName.textContent = `Untitled-${currentTabNum}.js`; // Use currentTabNum for naming
         tabName.addEventListener('click', () => activateTab(tabId));
         tabButton.appendChild(tabName);
 
-        // Only add a close button if it's not the first tab
-        if (Object.keys(editors).length > 0 || !id) { // Logic to ensure first tab from load can be closed if more are added
-             if (tabId !== 'tab-1') { // Explicitly prevent closing tab-1
-                const closeBtn = document.createElement('button');
-                closeBtn.classList.add('close-tab-btn');
-                closeBtn.innerHTML = '&times;';
-                closeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent activateTab from firing
-                    closeTab(tabId);
-                });
-                tabButton.appendChild(closeBtn);
-            }
+        // Only add a close button if it's NOT the very first tab (tab-1)
+        // This ensures 'tab-1' is never deletable.
+        if (tabId !== 'tab-1') {
+            const closeBtn = document.createElement('button');
+            closeBtn.classList.add('close-tab-btn');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent activateTab from firing
+                closeTab(tabId);
+            });
+            tabButton.appendChild(closeBtn);
         }
         
         tabBar.appendChild(tabButton);
@@ -343,12 +351,18 @@ require(['vs/editor/editor.main'], function () {
             document.removeEventListener('mouseup', handleMouseUp);
         }
 
-        if (!id) {
+        if (id === null) { // Only activate if it's a newly created tab
             activateTab(tabId);
         }
     }
 
     function closeTab(tabId) {
+        // Prevent closing if it's the last tab
+        if (Object.keys(editors).length <= 1) {
+            console.warn("Cannot close the last remaining tab.");
+            return;
+        }
+
         const tabButton = document.getElementById(`btn-${tabId}`);
         const tabContent = document.getElementById(tabId);
         const tabIndex = Array.from(tabBar.children).indexOf(tabButton);
